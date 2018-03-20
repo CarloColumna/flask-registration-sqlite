@@ -1,0 +1,59 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1>Register Wallet</h1>
+<br>
+<form class="form-signin" role="form" method="post" action="">
+  {{ form.csrf_token }}
+
+  <p>
+  {{ form.wallet_address(placeholder="address") }}
+    <span class="error">
+      {% if form.wallet_address.errors %}
+        {% for error in form.wallet_address.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+
+  <p>
+  {{ form.wallet_location(placeholder="location") }}
+    <span class="error">
+      {% if form.wallet_location.errors %}
+        {% for error in form.wallet_location.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+
+  <p>
+    <label class="checkbox-inline">Status</label>
+    {{ form.wallet_status(placeholder="status") }}
+    <span class="error">
+      {% if form.wallet_status.errors %}
+        {% for error in form.wallet_status.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+
+  <p>
+  {{ form.wallet_coinType(placeholder="coin") }}
+    <span class="error">
+      {% if form.wallet_coinType.errors %}
+        {% for error in form.wallet_coinType.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+
+  <button class="btn btn-success" type="submit">Register</button>
+  <br><br>
+</form>
+
+{% endblock %}

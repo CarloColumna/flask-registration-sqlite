@@ -1,0 +1,92 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<h1>Welcome {{ username }}!</h1>
+
+<br>
+
+<div class="container-fluid">
+<div class="row">
+  <div class="col-md-7">
+    <iframe src="https://bitlucky.io/" style="display:inline; width: 660px; height: 660px">
+      <p>This service does not support iframes. Consult with Webmaster.</p>
+    </iframe>
+  </div>
+
+  <div class="col-md-5">
+    <div class="panel with-nav-tabs panel-default">
+      <div class="panel-heading">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab21default" data-toggle="tab">Coins</a></li>
+          <li><a href="#tab22default" data-toggle="tab">Times</a></li>
+        </ul>
+      </div>
+      <div class="panel-body">
+      <!---<form>--><form>
+        <div class="tab-content">
+          <div class="tab-pane fade" id="tab21default">
+            <div class="btn-group" data-toggle="buttons">
+              <div class="btn-group">
+
+                {% for coin in coins %}
+                  <label class="btn btn-default btn-sm" style="width: 100px; text-align:left; padding-left:20px" ><input type="checkbox" value="{{ coin.name }}" name="coin">{{ " " + coin.coin_name }}</label>
+                  {% if ((loop.index0 + 1) % 4) == 0 %}
+                    <br>
+                  {% endif %}
+                {% endfor %}
+
+              </div>
+            </div>
+            <br> <br>
+            <div class="text-center">
+              <button onclick="selectAllCoins()" type="button" class="btn btn-default btn-xs" style="width: 80px">Select All</button>
+              <button onclick="clearAllCoins()" type="button" class="btn btn-default btn-xs" style="width: 80px">Clear All</button>
+            </div>
+
+          </div>
+          <div class="tab-pane fade" id="tab22default">
+            <div class="btn-group" data-toggle="buttons">
+              <div class="btn-group">
+
+                {% for time in timers %}
+                  <label class="btn btn-default btn-sm" style="width: 100px; text-align:left; padding-left:20px" >
+                    <input type="checkbox" value="{{ time }}" name="time">{{ " " + time }}
+                  </label>
+                  {% if ((loop.index0 + 1) % 4) == 0 %}
+                    <br>
+                  {% endif %}
+                {% endfor %}
+
+              </div>
+            </div>
+            <br> <br>
+            <div class="text-center">
+              <button onclick="selectAllTimes()" type="button" class="btn btn-default btn-xs" style="width: 80px">Select All</button>
+              <button onclick="clearAllTimes()" type="button" class="btn btn-default btn-xs" style="width: 80px">Clear All</button>
+            </div>
+          </div>
+          <br><br>
+          <div class="text-center">
+            <button type="" class="btn btn-default btn-xs" style="width: 80px">Done</button>
+          </div>
+
+        </div>
+
+      <!---</form>--></form>
+      <br> <br>
+
+      <div id="successAlert" class="alert alert-success" role="alert" style="display:none;"></div>
+      <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
+
+      </div>
+  </div>
+</div>
+
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+     <script src="{{url_for('static', filename='main.js')}}" type="text/javascript"></script>
+{% endblock %}

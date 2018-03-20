@@ -1,0 +1,174 @@
+{% extends "_base.html" %}
+
+{% block css %}
+      <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<h1>Register Coin</h1>
+<br>
+<div id="summary"></div>
+
+<form class="form-signin" role="form" method="post" action="{{url_for('coin.registercoin')}}">
+  {{ form.csrf_token }}
+  {{ form.hidden_tag() }}
+
+
+  <br>
+  <div class="row">
+  <div class="col-xs-3">
+  {{ form.coin_name(placeholder="coin name") }}
+  </div>
+  <div class="col-xs-3">
+  <input type="text" name="coinName2" id="coinName2" placeholder="Registered coins:" style="border: 0">
+  </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+   <div class="col-xs-3">
+  <div style="float: left" id="status"></div>
+  </div>
+  </div>
+  <br><br><br>
+  <div>
+  <button class="btn btn-success" type="submit">Register</button>
+  </div>
+  <br><br>
+</form>
+
+{% endblock %}
+
+{% block js %}
+      <script src = "https://code.jquery.com/jquery-1.12.4.js"></script>
+      <script src = "https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <script>
+
+
+$(document).ready(function(){
+    $("button").click(function(){
+          var coin_name = $("#coin_name").val();
+        $.getJSON("https://api.coinmarketcap.com/v1/ticker/" + coin_name + "/", 
+          function(result){
+            alert(JSON.stringify(result));
+            var coinJson = result; 
+        })
+
+        .done(function() { alert('getJSON request succeeded!'); })
+        .fail(function(jqXHR, textStatus, errorThrown) { 
+          $('#status').html('<img style="width: 30px; height: 20px; float: left" src="http://www.nus.edu.sg/identity/images/identity/logo/wrong.gif"> <p style="float: left">Incorrect coin name!</p>');
+        })
+        .always(function() { alert('getJSON request ended!'); });
+    });
+});
+
+
+<!-- for every user keyup, it continually updates gives updated information to the user. This
+gives the user information if the coin is already registered in the db -->
+
+$(document).ready(function() {
+  $('#coin_name').keyup(function()
+  {
+    var coin_name = $("#coin_name").val();
+    $("#status").html('<img style="width: 50px; height: 30px" src="http://www.downgraf.com/wp-content/uploads/2014/09/01-progress.gif">');
+
+    if (coin_name!='') {
+
+        $.ajax({
+        url: '{{ url_for("coin.webcoincheck") }}',
+        dataType: 'json',
+        data: $('#coin_name').serialize(),
+        success: function(data) {
+                  setTimeout(function()
+                  {
+                  delaySuccess(data);
+                  }, 1000);
+
+                   
+                 }
+        });
+
+    }
+
+    else {
+      $("#status").html('');
+    }
+
+
+  });
+});
+
+<!-- Continually checks the coin validity through a web api This
+gives the user information if the coin is valid or typed incorrectly
+-->
+
+function delaySuccess(data) {
+  if (data!=''){
+
+
+  $('#status').html('<img style="width: 30px; height: 20px" src="http://www.nus.edu.sg/identity/images/identity/logo/wrong.gif">'+ data);
+  }
+  else {
+
+        var coin_name = $("#coin_name").val();
+        $.getJSON("https://api.coinmarketcap.com/v1/ticker/" + coin_name + "/", 
+          function(result){
+            alert(JSON.stringify(result)); 
+        })
+
+        .done(function() { 
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) { 
+          $('#status').html('<img style="width: 30px; height: 20px; float: left" src="http://www.nus.edu.sg/identity/images/identity/logo/wrong.gif"> <p style="float: left">Incorrect coin name!</p>');
+        })
+        .always(function() { 
+        });
+
+
+
+  }
+}
+
+
+<!-- for every user keyup, it calls the route to access a web api -->
+
+    $(document).ready(function() {
+    $('#coin_name').autocomplete({
+        width: 300,
+        max: 10,
+        delay: 100,
+        minLength: 1,
+        autoFocus: true,
+        cacheLength: 1,
+        scroll: true,
+        highlight: false,
+        position: { my : "left top", at: "left bottom", of: "#coinName2" },
+        select: function( event, ui ) {
+          return false;
+        },
+        source: function(request, response) {
+            $.ajax({
+                url: '{{ url_for("coin.dbcoincheck") }}',
+                dataType: "json",
+                data: {
+                  term: $('#coin_name').val()
+                },
+
+                contentType: "application/json; charset=utf-8",
+                dataFilter: function (data) { return data; },
+                success: function(data) {
+                    var items = data;
+                    response(items);
+
+                }
+            });
+        },
+
+            });
+
+    });
+
+      </script>  
+{% endblock %}
